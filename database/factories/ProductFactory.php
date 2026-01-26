@@ -19,6 +19,7 @@ class ProductFactory extends Factory
     {
         return [
             'name' => $this->faker->colorName() . ' pencil',
+            'exact_online_id' => $this->faker->uuid(),
             'slug' => $this->faker->slug(),
             'description' => $this->faker->text(),
             'price' => $this->faker->numberBetween(1000, 10000),

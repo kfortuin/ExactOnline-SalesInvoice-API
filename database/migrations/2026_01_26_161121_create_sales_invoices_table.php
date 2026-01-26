@@ -11,9 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('invoices', function (Blueprint $table) {
+        Schema::create('sales_invoices', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->uuid('exact_online_id');
+            $table->unsignedInteger('user_id');
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

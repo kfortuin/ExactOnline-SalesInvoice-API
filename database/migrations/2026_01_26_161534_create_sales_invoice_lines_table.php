@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('invoice_lines', function (Blueprint $table) {
+        Schema::create('sales_invoice_lines', function (Blueprint $table) {
             $table->id();
-            $table->uuid('invoice_id');
+            $table->uuid('sales_invoice_id');
             $table->uuid('product_id');
             $table->uuid('quantity');
             $table->timestamps();
 
-            $table->foreign('invoice_id')->references('id')->on('invoices');
+            $table->foreign('sales_invoice_id')->references('id')->on('sales_invoices');
             $table->foreign('product_id')->references('id')->on('products');
         });
     }
