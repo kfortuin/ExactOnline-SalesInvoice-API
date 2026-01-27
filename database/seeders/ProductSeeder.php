@@ -15,5 +15,9 @@ class ProductSeeder extends Seeder
         Product::factory()
             ->count(5)
             ->create();
+
+        $this->command->info('5 Products seeded successfully.');
+        $products = Product::all(['id', 'name'])->toArray();
+        $this->command->table(['ID', 'Name'], $products);
     }
 }

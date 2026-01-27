@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('sales_invoices', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('exact_online_id');
+            $table->uuid('exact_online_id')->nullable();
+            $table->string('invoice_number', 6)->nullable();
             $table->unsignedInteger('user_id');
+            $table->dateTime('invoice_date')->nullable();
+            $table->dateTime('due_date')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

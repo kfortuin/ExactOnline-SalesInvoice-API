@@ -13,7 +13,18 @@ class SalesInvoice extends Model
 
     protected $table = 'sales_invoices';
 
-    protected $fillable = [];
+    protected $fillable = [
+        'user_id',
+        'exact_online_id',
+        'invoice_number',
+        'invoice_date',
+        'due_date',
+    ];
+
+    protected $casts = [
+        'invoice_date' => 'datetime',
+        'due_date' => 'datetime',
+    ];
 
     public function salesInvoiceLines(): HasMany
     {
@@ -23,5 +34,13 @@ class SalesInvoice extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public static function generateInvoiceNumber(): string
+    {
+        $lastInvoice = self::orderBy('created_at', 'desc')->first();
+        $lastNumber = $lastInvoice ? (int) str_replace('INV-', '', $lastInvoice->invoice_number) : 0;
+        $newNumber = $lastNumber + 1;
+        return 'INV-' . str_pad((string)$newNumber, 6, '0', STR_PAD_LEFT);
     }
 }

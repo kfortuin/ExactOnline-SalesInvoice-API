@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SalesInvoiceRequest;
 use App\Models\SalesInvoice;
+use App\Services\ExactOnlineService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -10,40 +12,22 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SalesInvoiceController extends Controller
 {
-    public function createSalesInvoice(Request $request): JsonResponse
+    public function createSalesInvoice(SalesInvoiceRequest $request): JsonResponse
     {
-        $validator = \Validator::make($request->all(), [
-            'user_id' => 'required|integer|exists:users,id',
-        ]);
-
-        // if 'lines' exists, validate each line with ValidSalesInvoiceLine
-        if ($request->has('lines')) {
-            $validator->after(function ($validator) use ($request) {
-                $lines = $request->input('lines');
-                foreach ($lines as $index => $line) {
-                    $lineValidator = \Validator::make($line, [
-                        'product_id' => 'required|string|exists:products,id',
-                        'quantity' => 'required|numeric|min:1',
-                    ]);
-
-                    if ($lineValidator->fails()) {
-                        $validator->errors()->add("lines.$index", $lineValidator->errors()->all());
-                    }
-                }
-            });
-        }
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
         $salesInvoice = new SalesInvoice();
-        $salesInvoice->fill($request->all());
-
+        $salesInvoice->user_id = $request->input('user_id');
+        $salesInvoice->invoice_number = SalesInvoice::generateInvoiceNumber();
         $salesInvoice->save();
 
-        try {
+        foreach ($request->input('lines', []) as $lineData) {
+            $salesInvoice->salesInvoiceLines()->create([
+                'product_id' => $lineData['product_id'],
+                'quantity' => $lineData['quantity'],
+            ]);
+        }
 
+        try {
+            ExactOnlineService::sendInvoice($salesInvoice);
             Log::channel('exact-online')->info("Received invoice request for user {$salesInvoice->user->id}");
         } catch (\Exception $exception) {
             Log::channel('exact-online')->error($exception->getMessage());

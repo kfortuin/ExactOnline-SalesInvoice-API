@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->uuid('sales_invoice_id');
             $table->uuid('product_id');
-            $table->uuid('quantity');
+            $table->integer('quantity');
             $table->timestamps();
 
             $table->foreign('sales_invoice_id')->references('id')->on('sales_invoices');
