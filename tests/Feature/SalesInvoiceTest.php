@@ -11,10 +11,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SalesInvoiceTest extends TestCase
 {
-    use RefreshDatabase;
+     use RefreshDatabase;
 
     // Seed the database with a user and some test products
-    protected $seed = true;
+    protected bool $seed = true;
 
     public function setUp(): void
     {
@@ -22,7 +22,7 @@ class SalesInvoiceTest extends TestCase
     }
 
     // Test API endpoint and test if it returns 201 status code. Prevent actual creation of sales invoice in Exact Online by mocking the service.
-    public function test_sales_invoices_are_created()
+    public function test_sales_invoices_are_created(): void
     {
         $user = User::first();
         $products = Product::inRandomOrder()->take(2)->get();
@@ -34,7 +34,7 @@ class SalesInvoiceTest extends TestCase
         foreach ($products as $product) {
             $payload['lines'][] = [
                 'product_id' => $product->id,
-                'quantity' => rand(1, 5),
+                'quantity' => random_int(1, 5),
             ];
         }
 
@@ -45,11 +45,8 @@ class SalesInvoiceTest extends TestCase
         $this->assertDatabaseCount('sales_invoice_lines', 2);
     }
 
-    public function test_payload_is_validated()
+    public function test_payload_is_validated(): void
     {
-        $user = User::first();
-        $products = Product::inRandomOrder()->take(2)->get();
-
         $payload = [
             'user_id' => null,
             'lines' => [
