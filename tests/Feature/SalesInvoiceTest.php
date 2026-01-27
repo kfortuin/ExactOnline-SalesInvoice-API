@@ -5,13 +5,13 @@ namespace Feature;
 use App\Models\Product;
 use App\Models\SalesInvoice;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 class SalesInvoiceTest extends TestCase
 {
-     use RefreshDatabase;
+     use DatabaseTransactions;
 
     // Seed the database with a user and some test products
     protected bool $seed = true;
