@@ -1,59 +1,47 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Exact Online - Sales Invoice creation
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Setup
+This application is built in Laravel 12, with PHP 8.3 and runs off a sqlite database.
+- Run `composer install` to install the dependencies.
+- Create a new sqlite database file by running `touch database/database.sqlite`.
+- Add the `.env` file by copying `.env.example` to `.env`.
+  - Supply the `.env` file with the following linesL
+    ```
+    # Exact Online
+    EXACT_ONLINE_DIVISION=1234567
+    EXACT_ONLINE_CLIENT_ID="79014b33-7fed-4549-a103-159bd475ce34" # random GUID
+      ```
+- Generate the `APP_KEY` by running `php artisan key:generate`.  
+- Run ``php artisan migrate:fresh --seed`` to create the necessary tables and fill them with a test user and some test Products.
 
-## About Laravel
+**Exact Online** is currently mocked. No external API calls are made and no authentication is required or provided. Laravel's HTTP Client is used to simulate the API calls.  
+The ExactOnline SalesInvoice model is based on Exact Online's POST documentation: https://start.exactonline.nl/docs/HlpRestAPIResourcesDetails.aspx?name=SalesInvoiceSalesInvoices
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Routes
+The only route available is the `/api/sales-invoice` POST route.
+### Request
+The request body must be a JSON object with the following structure:
+```json
+{
+    "user_id": 1,
+    "lines": [
+        {
+            "product_id": "1234",
+            "quantity": 2
+        }
+    ]
+}
+```
+The `user_id` field is required and must correspond to an existing user in the database.  
+If you ran the migrations, you should be able to use `1` as the user ID.  
+For the products ('lines') you can copy one or more of the product IDs that are shown in the table that is rendered after running the migrations and seeders. Each line must contain a valid `product_id` and a `quantity` greater than zero.  
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Postman can be used to send the POST request. Make sure to set the correct JSON headers.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Testing
+You can run the tests with `php artisan test`.  
+There are tests for the Sales Invoice creation endpoint, covering both successful and failure scenarios, as well as tests for the Exact Online service that simulates the API calls.  
+Transactions are used in the tests to ensure database changes are rolled back after each test. Using Postman _will_ store a SalesInvoice and its lines in the database.
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Logging
+Successful and failed attempts to POST to Exact Online are logged in the `exact_online` channel. The logfile can be found in `/storage/logs/exact_online-YEAR-MONTH-DAY.log`.

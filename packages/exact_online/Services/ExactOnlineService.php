@@ -64,7 +64,7 @@ class ExactOnlineService
                 ]
             );
 
-        Log::channel('exact_online')->info('SalesInvoice: created new SalesInvoice', [
+        Log::channel('exact_online')->info('SalesInvoice: POST', [
             'status' => $response->getStatusCode(),
             'body' => $response->body(),
         ]);
