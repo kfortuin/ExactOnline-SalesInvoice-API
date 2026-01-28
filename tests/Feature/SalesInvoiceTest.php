@@ -13,7 +13,6 @@ class SalesInvoiceTest extends TestCase
 {
      use DatabaseTransactions;
 
-    // Seed the database with a user and some test products
     protected bool $seed = true;
 
     public function setUp(): void
@@ -21,7 +20,6 @@ class SalesInvoiceTest extends TestCase
         parent::setUp();
     }
 
-    // Test API endpoint and test if it returns 201 status code. Prevent actual creation of sales invoice in Exact Online by mocking the service.
     public function test_sales_invoices_are_created(): void
     {
         $user = User::first();
