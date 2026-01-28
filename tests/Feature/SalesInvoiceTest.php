@@ -5,15 +5,14 @@ namespace Feature;
 use App\Models\Product;
 use App\Models\SalesInvoice;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 class SalesInvoiceTest extends TestCase
 {
-     use RefreshDatabase;
+     use DatabaseTransactions;
 
-    // Seed the database with a user and some test products
     protected bool $seed = true;
 
     public function setUp(): void
@@ -21,7 +20,6 @@ class SalesInvoiceTest extends TestCase
         parent::setUp();
     }
 
-    // Test API endpoint and test if it returns 201 status code. Prevent actual creation of sales invoice in Exact Online by mocking the service.
     public function test_sales_invoices_are_created(): void
     {
         $user = User::first();

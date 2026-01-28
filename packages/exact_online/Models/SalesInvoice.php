@@ -8,8 +8,9 @@ class SalesInvoice
     public string $journal;
     /** @var array<SalesInvoiceLine> */
     public array $salesInvoiceLines = [];
-    public string $invoiceTo;
-    public string $invoiceDate;
+    public ?string $invoiceTo;
+    public ?string $invoiceDate;
+    public ?string $yourRef;
 
 
     public function fromArray(array $data): self
@@ -19,6 +20,7 @@ class SalesInvoice
         $this->setSalesInvoiceLines($data['SalesInvoiceLines']);
         $this->setInvoiceTo($data['InvoiceTo'] ?? null);
         $this->setInvoiceDate($data['InvoiceDate'] ?? null);
+        $this->setYourRef($data['YourRef'] ?? null);
 
         return $this;
     }
@@ -53,23 +55,33 @@ class SalesInvoice
         $this->salesInvoiceLines = $salesInvoiceLines;
     }
 
-    public function getInvoiceTo(): string
+    public function getInvoiceTo(): ?string
     {
         return $this->invoiceTo;
     }
 
-    public function setInvoiceTo(string $invoiceTo): void
+    public function setInvoiceTo(?string $invoiceTo): void
     {
         $this->invoiceTo = $invoiceTo;
     }
 
-    public function getInvoiceDate(): string
+    public function getInvoiceDate(): ?string
     {
         return $this->invoiceDate;
     }
 
-    public function setInvoiceDate(string $invoiceDate): void
+    public function setInvoiceDate(?string $invoiceDate): void
     {
         $this->invoiceDate = $invoiceDate;
+    }
+
+    public function getYourRef(): ?string
+    {
+        return $this->yourRef;
+    }
+
+    public function setYourRef(?string $yourRef): void
+    {
+        $this->yourRef = $yourRef;
     }
 }

@@ -11,6 +11,7 @@ return [
     |
     */
     'exact_online_division' => env('EXACT_ONLINE_DIVISION', ''),
+    'exact_online_client_id' => env('EXACT_ONLINE_CLIENT_ID', ''),
 
     /*
     |--------------------------------------------------------------------------

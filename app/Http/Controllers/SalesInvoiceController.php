@@ -40,14 +40,24 @@ class SalesInvoiceController extends Controller
         }
 
         try {
-            ExactOnlineService::sendInvoice($salesInvoice);
-            Log::channel('exact_online')->info("Received invoice request for user {$salesInvoice->user->id}");
+            if (ExactOnlineService::sendInvoice(
+                    $salesInvoice,
+                    in_array(config('app.env'), ['local', 'testing', 'staging'], true)
+                )->successful()
+            ) {
+                Log::channel('exact_online')
+                    ->info("Processed SalesInvoice {$salesInvoice->id} for user {$salesInvoice->user->id}");
+            } else {
+                Log::channel('exact_online')
+                    ->warning("Failed to process SalesInvoice {$salesInvoice->id} for user {$salesInvoice->user->id}");
+                // Ideally, this is where I would send a Slack notification with the option to retry the POST
+            }
         } catch (\Exception $exception) {
             Log::channel('exact_online')->error($exception->getMessage(), [
                 'stack' => $exception->getTraceAsString(),
             ]);
+            return response()->json([], Response::HTTP_BAD_REQUEST);
         }
-
         return response()->json([], Response::HTTP_CREATED);
     }
 }
